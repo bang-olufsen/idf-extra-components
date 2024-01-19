@@ -10,10 +10,6 @@
 #include "led_strip_types.h"
 #include "esp_idf_version.h"
 
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
-#include "driver/rmt_types.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,12 +18,7 @@ extern "C" {
  * @brief LED Strip RMT specific configuration
  */
 typedef struct {
-#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
     uint8_t rmt_channel;        /*!< Specify the channel number, the legacy RMT driver doesn't support channel allocator */
-#else // new driver supports specify the clock source and clock resolution
-    rmt_clock_source_t clk_src; /*!< RMT clock source */
-    uint32_t resolution_hz;     /*!< RMT tick resolution, if set to zero, a default resolution (10MHz) will be applied */
-#endif
     size_t mem_block_symbols;   /*!< How many RMT symbols can one RMT channel hold at one time. Set to 0 will fallback to use the default size. */
     struct {
         uint32_t with_dma: 1;   /*!< Use DMA to transmit data */
