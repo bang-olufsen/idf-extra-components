@@ -144,6 +144,10 @@ esp_err_t led_strip_new_rmt_device(const led_strip_config_t *led_config, const l
     // set the minimal clock division because the LED strip needs a high clock resolution
     config.clk_div = 2;
 
+    if (led_config->flags.invert_out) {
+        config.flags |= RMT_CHANNEL_FLAGS_INVERT_SIG;
+    }
+
     uint8_t mem_block_num = 2;
     // override the default value if the user specify the mem block size
     if (dev_config->mem_block_symbols) {
