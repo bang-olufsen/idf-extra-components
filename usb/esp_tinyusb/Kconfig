@@ -170,6 +170,23 @@ menu "TinyUSB Stack"
             help
                 MSC Mount Path of storage.
     endmenu # "Massive Storage Class"
+    
+    menu "UF2 MSC feature"
+        config TINYUSB_UF2_MSC_ENABLED
+            depends on !TINYUSB_MSC_ENABLED
+            bool "Enable TinyUSB MSC feature"
+            default n
+            help
+                Enable TinyUF2 MSC feature. Note: disabled when MSC is enabled.
+        
+        config TINYUSB_MSC_BUFSIZE
+            depends on TINYUSB_UF2_MSC_ENABLED
+            int "MSC FIFO size"
+            default 512
+            range 64 10000
+            help
+                MSC FIFO size, in bytes.
+    endmenu # "UF2"
 
     menu "Communication Device Class (CDC)"
         config TINYUSB_CDC_ENABLED

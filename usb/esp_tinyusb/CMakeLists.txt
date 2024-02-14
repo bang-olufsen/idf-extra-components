@@ -27,6 +27,10 @@ if(CONFIG_TINYUSB_MSC_ENABLED)
         )
 endif() # CONFIG_TINYUSB_MSC_ENABLED
 
+if(CONFIG_TINYUSB_UF2_MSC_ENABLED)
+# not including any additional files. tinyuf2_msc.c replaces tusb_msc_storage.c
+endif() # CONFIG_TINYUSB_UF2_MSC_ENABLED
+
 if(CONFIG_TINYUSB_NET_MODE_NCM)
     list(APPEND srcs
          tinyusb_net.c

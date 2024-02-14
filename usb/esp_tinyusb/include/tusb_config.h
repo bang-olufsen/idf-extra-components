@@ -46,6 +46,10 @@ extern "C" {
 #   define CONFIG_TINYUSB_MSC_ENABLED 0
 #endif
 
+#ifndef CONFIG_TINYUSB_UF2_MSC_ENABLED
+#   define CONFIG_TINYUSB_UF2_MSC_ENABLED 0
+#endif
+
 #ifndef CONFIG_TINYUSB_HID_COUNT
 #   define CONFIG_TINYUSB_HID_COUNT 0
 #endif
@@ -155,7 +159,13 @@ extern "C" {
 
 // Enabled device class driver
 #define CFG_TUD_CDC                 CONFIG_TINYUSB_CDC_COUNT
-#define CFG_TUD_MSC                 CONFIG_TINYUSB_MSC_ENABLED
+
+#if CONFIG_TINYUSB_MSC_ENABLED || CONFIG_TINYUSB_UF2_MSC_ENABLED
+#define CFG_TUD_MSC                 1
+#else
+#define CFG_TUD_MSC                 0
+#endif
+
 #define CFG_TUD_HID                 CONFIG_TINYUSB_HID_COUNT
 #define CFG_TUD_AUDIO               CONFIG_TINYUSB_AUDIO_ENABLED
 #define CFG_TUD_MIDI                CONFIG_TINYUSB_MIDI_COUNT
