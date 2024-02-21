@@ -7,6 +7,7 @@
 #include "usb_descriptors.h"
 #include "sdkconfig.h"
 #include "tinyusb_types.h"
+#include "tusb_audio_desc_config.h"
 
 /*
  * A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
@@ -17,7 +18,7 @@
  */
 #define _PID_MAP(itf, n) ((CFG_TUD_##itf) << (n))
 #define USB_TUSB_PID (0x4000 | _PID_MAP(CDC, 0) | _PID_MAP(MSC, 1) | _PID_MAP(HID, 2) | \
-    _PID_MAP(MIDI, 3) ) //| _PID_MAP(AUDIO, 4) | _PID_MAP(VENDOR, 5) )
+    _PID_MAP(MIDI, 3) | _PID_MAP(AUDIO, 4) | _PID_MAP(VENDOR, 5) )
 
 /**** Kconfig driven Descriptor ****/
 
@@ -82,9 +83,13 @@ const char *descriptor_str_kconfig[] = {
     "",
 #endif
 
+#if CONFIG_TINYUSB_AUDIO_ENABLED             // 6: AUDIO Interface
+    CONFIG_TINYUSB_DESC_AUDIO_STRING,
+#endif
+
 #if CONFIG_TINYUSB_NET_MODE_ECM_RNDIS || CONFIG_TINYUSB_NET_MODE_NCM
-    "USB net",                               // 6. NET Interface
-    "",                                      // 7. MAC
+    "USB net",                               // 7. NET Interface
+    "",                                      // 8. MAC
 #endif
     NULL                                     // NULL: Must be last. Indicates end of array
 };
@@ -105,6 +110,11 @@ enum {
     ITF_NUM_MSC,
 #endif
 
+#if CFG_TUD_AUDIO
+    ITF_NUM_AUDIO_CONTROL,
+    ITF_NUM_AUDIO_STREAMING,
+#endif
+
 #if CFG_TUD_NCM
     ITF_NUM_NET,
     ITF_NUM_NET_DATA,
@@ -117,6 +127,7 @@ enum {
     TUSB_DESC_TOTAL_LEN = TUD_CONFIG_DESC_LEN +
                           CFG_TUD_CDC * TUD_CDC_DESC_LEN +
                           CFG_TUD_MSC * TUD_MSC_DESC_LEN +
+                          CFG_TUD_AUDIO * TINYUSB_AUDIO_DESC_LEN +
                           CFG_TUD_NCM * TUD_CDC_NCM_DESC_LEN
 };
 
@@ -132,6 +143,10 @@ enum {
 #if CFG_TUD_CDC > 1
     EPNUM_1_CDC_NOTIF,
     EPNUM_1_CDC,
+#endif
+
+#if CFG_TUD_AUDIO
+    EPNUM_AUDIO_DATA,
 #endif
 
 #if CFG_TUD_MSC
@@ -156,6 +171,10 @@ enum {
 
 #if CFG_TUD_MSC
     STRID_MSC_INTERFACE,
+#endif
+
+#if CFG_TUD_AUDIO
+    STRID_AUDIO_INTERFACE,
 #endif
 
 #if CFG_TUD_NCM
@@ -183,6 +202,19 @@ uint8_t const descriptor_cfg_kconfig[] = {
 #if CFG_TUD_MSC
     // Interface number, string index, EP Out & EP In address, EP size
     TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, STRID_MSC_INTERFACE, EPNUM_MSC, 0x80 | EPNUM_MSC, 64), // highspeed 512
+#endif
+
+#if CONFIG_TINYUSB_AUDIO_ENABLED
+    #if CONFIG_TINYUSB_AUDIO_4_CH
+        // Interface number, string index, nBytesPerSample, bitsUsedPerSample, EP In address, EP size
+        TUD_AUDIO_MIC_FOUR_CH_DESCRIPTOR(ITF_NUM_AUDIO_CONTROL, STRID_AUDIO_INTERFACE, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * 8, (0x80 | EPNUM_AUDIO_DATA), CFG_TUD_AUDIO_EP_SZ_IN),
+    #elif CONFIG_TINYUSB_AUDIO_2_CH
+        // Interface number, string index, nBytesPerSample, bitsUsedPerSample, EP In address, EP size
+        TUD_AUDIO_MIC_TWO_CH_DESCRIPTOR(ITF_NUM_AUDIO_CONTROL, STRID_AUDIO_INTERFACE, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * 8, (0x80 | EPNUM_AUDIO_DATA), CFG_TUD_AUDIO_EP_SZ_IN),
+    #else
+        // Interface number, string index, nBytesPerSample, bitsUsedPerSample, EP In address, EP size
+        TUD_AUDIO_MIC_ONE_CH_DESCRIPTOR(ITF_NUM_AUDIO_CONTROL, STRID_AUDIO_INTERFACE, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX, CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * 8, (0x80 | EPNUM_AUDIO_DATA), CFG_TUD_AUDIO_EP_SZ_IN),
+    #endif
 #endif
 
 #if CFG_TUD_NCM

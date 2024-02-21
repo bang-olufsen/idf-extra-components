@@ -33,11 +33,17 @@ if(CONFIG_TINYUSB_NET_MODE_NCM)
          )
 endif() # CONFIG_TINYUSB_NET_MODE_NCM
 
+if(CONFIG_TINYUSB_AUDIO_ENABLED)
+    list(APPEND srcs
+         tusb_audio.c
+         )
+endif() # CONFIG_TINYUSB_AUDIO_ENABLED
+
 idf_component_register(SRCS ${srcs}
                        INCLUDE_DIRS "include"
                        PRIV_INCLUDE_DIRS "include_private"
                        PRIV_REQUIRES usb
-                       REQUIRES fatfs vfs                 
+                       REQUIRES fatfs vfs
                        )
 
 # Determine whether tinyusb is fetched from component registry or from local path

@@ -12,7 +12,7 @@ menu "TinyUSB Stack"
         default TINYUSB_RHPORT_HS
         help
             Allows set the USB PHY Controller for TinyUSB: HS (USB OTG2.0 PHY for HighSpeed)
-             
+
         config TINYUSB_RHPORT_HS
             bool "HS"
     endchoice
@@ -139,6 +139,13 @@ menu "TinyUSB Stack"
             default "Espressif MSC Device"
             help
                 Name of the MSC device.
+
+        config TINYUSB_DESC_AUDIO_STRING
+            depends on TINYUSB_AUDIO_ENABLED
+            string "AUDIO Device String"
+            default "Espressif Audio Device"
+            help
+                Name of the Audio device.
     endmenu # "Descriptor configuration"
 
     menu "Massive Storage Class (MSC)"
@@ -194,6 +201,80 @@ menu "TinyUSB Stack"
             help
                 CDC FIFO size of TX channel.
     endmenu # "Communication Device Class"
+
+    menu "Audio Device Class (UAC2)"
+        config TINYUSB_AUDIO_ENABLED
+            bool "Enable TinyUSB Audio feature"
+            default n
+            help
+                Enable TinyUSB Audio feature.
+
+        config TINYUSB_AUDIO_SAMPLE_RATE
+            depends on TINYUSB_AUDIO_ENABLED
+            int "Audio sample rate (Hz)"
+            default 48000
+            range 8000 48000
+            help
+                Audio sample rate.
+
+        choice TINYUSB_AUDIO_BIT_DEPTH
+            prompt "Audio bit depth"
+            depends on TINYUSB_AUDIO_ENABLED
+            default TINYUSB_AUDIO_16_BIT
+            help
+                Audio bit depth
+
+            config TINYUSB_AUDIO_16_BIT
+                bool "16bit"
+                help
+                    16bit audio
+
+            config TINYUSB_AUDIO_24_BIT
+                bool "24bit"
+                help
+                    24bit audio
+
+            config TINYUSB_AUDIO_32_BIT
+                bool "32bit"
+                help
+                    32bit audio
+        endchoice
+
+        choice TINYUSB_AUDIO_CHANNELS
+            prompt "Audio channels"
+            depends on TINYUSB_AUDIO_ENABLED
+            default TINYUSB_AUDIO_1_CH
+            help
+                Number of audio channels.
+
+            config TINYUSB_AUDIO_1_CH
+                bool "1"
+                help
+                    1 audio channels.
+
+            config TINYUSB_AUDIO_2_CH
+                bool "2"
+                help
+                    2 audio channels
+
+            config TINYUSB_AUDIO_4_CH
+                bool "4"
+                help
+                    4 audio channels
+        endchoice
+
+        config TINYUSB_AUDIO_BYTES_PER_SAMPLE
+            int
+            default 2 if TINYUSB_AUDIO_16_BIT
+            default 3 if TINYUSB_AUDIO_24_BIT
+            default 4 if TINYUSB_AUDIO_32_BIT
+
+        config TINYUSB_AUDIO_CHANNELS
+            int
+            default 1 if TINYUSB_AUDIO_1_CH
+            default 2 if TINYUSB_AUDIO_2_CH
+            default 4 if TINYUSB_AUDIO_4_CH
+    endmenu # "Audio Device Class (UAC2)"
 
     menu "Musical Instrument Digital Interface (MIDI)"
         config TINYUSB_MIDI_COUNT

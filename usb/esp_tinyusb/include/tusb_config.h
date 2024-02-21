@@ -28,6 +28,7 @@
 
 #include "tusb_option.h"
 #include "sdkconfig.h"
+#include "tusb_audio_desc_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +48,10 @@ extern "C" {
 
 #ifndef CONFIG_TINYUSB_HID_COUNT
 #   define CONFIG_TINYUSB_HID_COUNT 0
+#endif
+
+#ifndef CONFIG_TINYUSB_AUDIO_ENABLED
+#   define CONFIG_TINYUSB_AUDIO_ENABLED 0
 #endif
 
 #ifndef CONFIG_TINYUSB_MIDI_COUNT
@@ -136,10 +141,23 @@ extern "C" {
 // Number of BTH ISO alternatives
 #define CFG_TUD_BTH_ISO_ALT_COUNT   CONFIG_TINYUSB_BTH_ISO_ALT_COUNT
 
+// Audio macros
+// Have a look into audio_device.h for all configurations
+#define CFG_TUD_AUDIO_FUNC_1_DESC_LEN                                 TINYUSB_AUDIO_DESC_LEN
+#define CFG_TUD_AUDIO_FUNC_1_N_AS_INT                                 1
+#define CFG_TUD_AUDIO_FUNC_1_CTRL_BUF_SZ                              64
+#define CFG_TUD_AUDIO_ENABLE_EP_IN                                    1
+#define CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX                    CONFIG_TINYUSB_AUDIO_BYTES_PER_SAMPLE
+#define CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX                            CONFIG_TINYUSB_AUDIO_CHANNELS
+#define CFG_TUD_AUDIO_EP_SZ_IN                                        (TINYUSB_AUDIO_SAMPLE_RATE / 1000) * CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX
+#define CFG_TUD_AUDIO_FUNC_1_EP_IN_SZ_MAX                             CFG_TUD_AUDIO_EP_SZ_IN
+#define CFG_TUD_AUDIO_FUNC_1_EP_IN_SW_BUF_SZ                          CFG_TUD_AUDIO_EP_SZ_IN
+
 // Enabled device class driver
 #define CFG_TUD_CDC                 CONFIG_TINYUSB_CDC_COUNT
 #define CFG_TUD_MSC                 CONFIG_TINYUSB_MSC_ENABLED
 #define CFG_TUD_HID                 CONFIG_TINYUSB_HID_COUNT
+#define CFG_TUD_AUDIO               CONFIG_TINYUSB_AUDIO_ENABLED
 #define CFG_TUD_MIDI                CONFIG_TINYUSB_MIDI_COUNT
 #define CFG_TUD_CUSTOM_CLASS        CONFIG_TINYUSB_CUSTOM_CLASS_ENABLED
 #define CFG_TUD_ECM_RNDIS           CONFIG_TINYUSB_NET_MODE_ECM_RNDIS
